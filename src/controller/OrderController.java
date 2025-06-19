@@ -59,7 +59,8 @@ public class OrderController {
     }
 
     public static boolean updateOrder(Order order) {
-        String sql = "UPDATE orders SET customer_name=?, contact=?, vehicle_model=?, problem=?, cost=?, status=? WHERE id=?";
+        String sql = "UPDATE orders SET customer_name = ?, contact = ?, vehicle_model = ?, problem = ?, cost = ?, status = ? WHERE id = ?";
+
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
@@ -80,7 +81,8 @@ public class OrderController {
     }
 
     public static boolean deleteOrder(int id) {
-        String sql = "DELETE FROM orders WHERE id=?";
+        String sql = "DELETE FROM orders WHERE id = ?";
+
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 

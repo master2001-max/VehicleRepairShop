@@ -1,7 +1,7 @@
 package view;
 
-import controller.SupplierController;
-import model.Supplier;
+import controller.EmployeeController;
+import model.Employee;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -9,13 +9,14 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.util.List;
 
-public class SupplierForm extends JFrame {
-    private JTextField nameField, phoneField, emailField, itemField;
+public class EmployeeForm extends JFrame {
+    private JTextField nameField, phoneField, emailField;
+    private JComboBox<String> roleBox;
     private JTable table;
     private DefaultTableModel model;
 
-    public SupplierForm() {
-        setTitle("🏷️ Supplier Management");
+    public EmployeeForm() {
+        setTitle("👨‍🔧 Employee Management");
         setSize(800, 500);
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
@@ -24,33 +25,33 @@ public class SupplierForm extends JFrame {
         formPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
         nameField = new JTextField();
+        roleBox = new JComboBox<>(new String[]{"Mechanic", "Receptionist", "Manager"});
         phoneField = new JTextField();
         emailField = new JTextField();
-        itemField = new JTextField();
 
-        formPanel.add(new JLabel("Supplier Name:"));
+        formPanel.add(new JLabel("Name:"));
         formPanel.add(nameField);
+        formPanel.add(new JLabel("Role:"));
+        formPanel.add(roleBox);
         formPanel.add(new JLabel("Phone:"));
         formPanel.add(phoneField);
         formPanel.add(new JLabel("Email:"));
         formPanel.add(emailField);
-        formPanel.add(new JLabel("Item Supplied:"));
-        formPanel.add(itemField);
 
         JButton addBtn = new JButton("➕ Add");
         JButton updateBtn = new JButton("✏️ Update");
         JButton deleteBtn = new JButton("🗑️ Delete");
 
-        addBtn.addActionListener(this::addSupplier);
-        updateBtn.addActionListener(this::updateSupplier);
-        deleteBtn.addActionListener(this::deleteSupplier);
+        addBtn.addActionListener(this::addEmployee);
+        updateBtn.addActionListener(this::updateEmployee);
+        deleteBtn.addActionListener(this::deleteEmployee);
 
         formPanel.add(addBtn);
         formPanel.add(updateBtn);
 
         add(formPanel, BorderLayout.NORTH);
 
-        model = new DefaultTableModel(new String[]{"ID", "Name", "Phone", "Email", "Item"}, 0);
+        model = new DefaultTableModel(new String[]{"ID", "Name", "Role", "Phone", "Email"}, 0);
         table = new JTable(model);
         table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         table.getSelectionModel().addListSelectionListener(e -> loadSelectedRow());
@@ -58,71 +59,71 @@ public class SupplierForm extends JFrame {
         add(new JScrollPane(table), BorderLayout.CENTER);
         add(deleteBtn, BorderLayout.SOUTH);
 
-        loadSuppliers();
+        loadEmployees();
     }
 
-    private void addSupplier(ActionEvent e) {
+    private void addEmployee(ActionEvent e) {
         String name = nameField.getText();
+        String role = (String) roleBox.getSelectedItem();
         String phone = phoneField.getText();
         String email = emailField.getText();
-        String item = itemField.getText();
 
         if (name.isEmpty() || phone.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Name and Phone are required!");
+            JOptionPane.showMessageDialog(this, "Name and phone are required!");
             return;
         }
 
-        Supplier s = new Supplier(name, phone, email, item);
-        if (SupplierController.addSupplier(s)) {
-            JOptionPane.showMessageDialog(this, "✅ Supplier added!");
-            loadSuppliers();
+        Employee emp = new Employee(name, role, phone, email);
+        if (EmployeeController.addEmployee(emp)) {
+            JOptionPane.showMessageDialog(this, "✅ Employee added!");
+            loadEmployees();
             clearForm();
         } else {
-            JOptionPane.showMessageDialog(this, "❌ Failed to add supplier.");
+            JOptionPane.showMessageDialog(this, "❌ Failed to add employee.");
         }
     }
 
-    private void updateSupplier(ActionEvent e) {
+    private void updateEmployee(ActionEvent e) {
         int row = table.getSelectedRow();
         if (row == -1) return;
 
         int id = (int) model.getValueAt(row, 0);
         String name = nameField.getText();
+        String role = (String) roleBox.getSelectedItem();
         String phone = phoneField.getText();
         String email = emailField.getText();
-        String item = itemField.getText();
 
-        Supplier s = new Supplier(id, name, phone, email, item);
-        if (SupplierController.updateSupplier(s)) {
-            JOptionPane.showMessageDialog(this, "✏️ Supplier updated!");
-            loadSuppliers();
+        Employee emp = new Employee(id, name, role, phone, email);
+        if (EmployeeController.updateEmployee(emp)) {
+            JOptionPane.showMessageDialog(this, "✏️ Employee updated!");
+            loadEmployees();
             clearForm();
         } else {
             JOptionPane.showMessageDialog(this, "❌ Update failed.");
         }
     }
 
-    private void deleteSupplier(ActionEvent e) {
+    private void deleteEmployee(ActionEvent e) {
         int row = table.getSelectedRow();
         if (row == -1) return;
 
-        int confirm = JOptionPane.showConfirmDialog(this, "Delete this supplier?", "Confirm", JOptionPane.YES_NO_OPTION);
+        int confirm = JOptionPane.showConfirmDialog(this, "Delete this employee?", "Confirm", JOptionPane.YES_NO_OPTION);
         if (confirm == JOptionPane.YES_OPTION) {
             int id = (int) model.getValueAt(row, 0);
-            if (SupplierController.deleteSupplier(id)) {
-                JOptionPane.showMessageDialog(this, "🗑️ Supplier deleted.");
-                loadSuppliers();
+            if (EmployeeController.deleteEmployee(id)) {
+                JOptionPane.showMessageDialog(this, "🗑️ Employee deleted.");
+                loadEmployees();
                 clearForm();
             }
         }
     }
 
-    private void loadSuppliers() {
+    private void loadEmployees() {
         model.setRowCount(0);
-        List<Supplier> list = SupplierController.getAllSuppliers();
-        for (Supplier s : list) {
+        List<Employee> list = EmployeeController.getAllEmployees();
+        for (Employee e : list) {
             model.addRow(new Object[]{
-                    s.getId(), s.getName(), s.getPhone(), s.getEmail(), s.getItemSupplied()
+                    e.getId(), e.getName(), e.getRole(), e.getPhone(), e.getEmail()
             });
         }
     }
@@ -131,16 +132,16 @@ public class SupplierForm extends JFrame {
         nameField.setText("");
         phoneField.setText("");
         emailField.setText("");
-        itemField.setText("");
+        roleBox.setSelectedIndex(0);
     }
 
     private void loadSelectedRow() {
         int row = table.getSelectedRow();
         if (row != -1) {
             nameField.setText((String) model.getValueAt(row, 1));
-            phoneField.setText((String) model.getValueAt(row, 2));
-            emailField.setText((String) model.getValueAt(row, 3));
-            itemField.setText((String) model.getValueAt(row, 4));
+            roleBox.setSelectedItem(model.getValueAt(row, 2));
+            phoneField.setText((String) model.getValueAt(row, 3));
+            emailField.setText((String) model.getValueAt(row, 4));
         }
     }
 }

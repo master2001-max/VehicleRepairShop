@@ -14,6 +14,7 @@ public class SupplierController {
 
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
+
             stmt.setString(1, s.getName());
             stmt.setString(2, s.getPhone());
             stmt.setString(3, s.getEmail());
@@ -49,6 +50,7 @@ public class SupplierController {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+
         return list;
     }
 
@@ -57,6 +59,7 @@ public class SupplierController {
 
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
+
             stmt.setString(1, s.getName());
             stmt.setString(2, s.getPhone());
             stmt.setString(3, s.getEmail());
@@ -76,6 +79,7 @@ public class SupplierController {
 
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
+
             stmt.setInt(1, id);
             return stmt.executeUpdate() > 0;
 

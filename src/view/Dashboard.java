@@ -14,6 +14,7 @@ public class Dashboard extends JFrame {
         setLocationRelativeTo(null);
         setLayout(new GridLayout(6, 1, 10, 10));
 
+        // Buttons
         JButton orderBtn = new JButton("🧾 Manage Customer Orders");
         JButton empBtn = new JButton("👨‍🔧 Manage Employees");
         JButton supplierBtn = new JButton("🏷️ Manage Suppliers");
@@ -21,6 +22,7 @@ public class Dashboard extends JFrame {
         JButton reportBtn = new JButton("📊 View Reports");
         JButton logoutBtn = new JButton("🚪 Logout");
 
+        // Add buttons to window
         add(orderBtn);
         add(empBtn);
         add(supplierBtn);
@@ -28,15 +30,16 @@ public class Dashboard extends JFrame {
         add(reportBtn);
         add(logoutBtn);
 
-        // Button Actions
+        // Functional actions
         orderBtn.addActionListener(e -> new OrderForm().setVisible(true));
+        empBtn.addActionListener(e -> new EmployeeForm().setVisible(true));
         supplierBtn.addActionListener(e -> new SupplierForm().setVisible(true));
 
-        // Placeholder actions
-        empBtn.addActionListener(e -> JOptionPane.showMessageDialog(this, "Employee Management coming soon!"));
-        inventoryBtn.addActionListener(e -> JOptionPane.showMessageDialog(this, "Inventory module coming soon!"));
-        reportBtn.addActionListener(e -> JOptionPane.showMessageDialog(this, "Report module coming soon!"));
+        // Coming soon placeholders
+        inventoryBtn.addActionListener(e -> JOptionPane.showMessageDialog(this, "📦 Inventory module coming soon!"));
+        reportBtn.addActionListener(e -> JOptionPane.showMessageDialog(this, "📊 Report module coming soon!"));
 
+        // Logout
         logoutBtn.addActionListener(e -> {
             dispose(); // close dashboard
             new LoginForm().setVisible(true); // go back to login

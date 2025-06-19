@@ -9,6 +9,17 @@ public class Order {
     private double cost;
     private String status;
 
+    // For new orders (no ID yet)
+    public Order(String customerName, String contact, String vehicleModel, String problem, double cost, String status) {
+        this.customerName = customerName;
+        this.contact = contact;
+        this.vehicleModel = vehicleModel;
+        this.problem = problem;
+        this.cost = cost;
+        this.status = status;
+    }
+
+    // For existing orders with ID
     public Order(int id, String customerName, String contact, String vehicleModel, String problem, double cost, String status) {
         this.id = id;
         this.customerName = customerName;
@@ -19,12 +30,7 @@ public class Order {
         this.status = status;
     }
 
-    public Order(String customerName, String contact, String vehicleModel, String problem, double cost, String status) {
-        this(0, customerName, contact, vehicleModel, problem, cost, status);
-    }
-
-    // Getters and setters...
-
+    // Getters
     public int getId() { return id; }
     public String getCustomerName() { return customerName; }
     public String getContact() { return contact; }
@@ -33,11 +39,5 @@ public class Order {
     public double getCost() { return cost; }
     public String getStatus() { return status; }
 
-    public void setId(int id) { this.id = id; }
-    public void setCustomerName(String customerName) { this.customerName = customerName; }
-    public void setContact(String contact) { this.contact = contact; }
-    public void setVehicleModel(String vehicleModel) { this.vehicleModel = vehicleModel; }
-    public void setProblem(String problem) { this.problem = problem; }
-    public void setCost(double cost) { this.cost = cost; }
-    public void setStatus(String status) { this.status = status; }
+    // Setters (optional if needed)
 }

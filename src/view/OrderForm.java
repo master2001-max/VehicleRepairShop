@@ -11,19 +11,19 @@ import java.util.List;
 
 public class OrderForm extends JFrame {
     private JTextField nameField, contactField, modelField, problemField, costField;
-    private JComboBox<String> statusBox;
+    private JComboBox<String> statusBox, filterBox;
     private JTable orderTable;
     private DefaultTableModel tableModel;
 
     public OrderForm() {
         setTitle("Customer Order Management");
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        setSize(900, 600);
+        setSize(900, 550);
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
 
-        // Top form
-        JPanel formPanel = new JPanel(new GridLayout(9, 2, 10, 10));
+        // ==== Form Panel ====
+        JPanel formPanel = new JPanel(new GridLayout(7, 2, 10, 10));
         formPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
         nameField = new JTextField();
@@ -33,56 +33,57 @@ public class OrderForm extends JFrame {
         costField = new JTextField();
         statusBox = new JComboBox<>(new String[]{"Pending", "In Progress", "Ready"});
 
-        formPanel.add(new JLabel("Customer Name:")); formPanel.add(nameField);
-        formPanel.add(new JLabel("Contact:")); formPanel.add(contactField);
-        formPanel.add(new JLabel("Vehicle Model:")); formPanel.add(modelField);
-        formPanel.add(new JLabel("Problem Description:")); formPanel.add(problemField);
-        formPanel.add(new JLabel("Total Cost:")); formPanel.add(costField);
-        formPanel.add(new JLabel("Order Status:")); formPanel.add(statusBox);
+        formPanel.add(new JLabel("Customer Name:"));
+        formPanel.add(nameField);
+        formPanel.add(new JLabel("Contact:"));
+        formPanel.add(contactField);
+        formPanel.add(new JLabel("Vehicle Model:"));
+        formPanel.add(modelField);
+        formPanel.add(new JLabel("Problem Description:"));
+        formPanel.add(problemField);
+        formPanel.add(new JLabel("Total Cost:"));
+        formPanel.add(costField);
+        formPanel.add(new JLabel("Order Status:"));
+        formPanel.add(statusBox);
 
-        JButton addButton = new JButton("Add Order");
-        JButton updateButton = new JButton("Update Order");
-        JButton deleteButton = new JButton("Delete Order");
+        // ==== Button Panel ====
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        JButton addBtn = new JButton("➕ Add");
+        JButton updateBtn = new JButton("✏️ Update");
+        JButton deleteBtn = new JButton("🗑️ Delete");
+        filterBox = new JComboBox<>(new String[]{"All", "Pending", "In Progress", "Ready"});
+        JButton filterBtn = new JButton("🔍 Filter");
 
-        addButton.addActionListener(this::addOrder);
-        updateButton.addActionListener(this::updateOrder);
-        deleteButton.addActionListener(this::deleteOrder);
+        addBtn.addActionListener(this::addOrder);
+        updateBtn.addActionListener(this::updateOrder);
+        deleteBtn.addActionListener(this::deleteOrder);
+        filterBtn.addActionListener(e -> filterOrders());
 
-        formPanel.add(addButton);
-        formPanel.add(updateButton);
-        formPanel.add(deleteButton);
+        buttonPanel.add(addBtn);
+        buttonPanel.add(updateBtn);
+        buttonPanel.add(deleteBtn);
+        buttonPanel.add(new JLabel("Status:"));
+        buttonPanel.add(filterBox);
+        buttonPanel.add(filterBtn);
 
-        add(formPanel, BorderLayout.NORTH);
+        JPanel topPanel = new JPanel(new BorderLayout());
+        topPanel.add(formPanel, BorderLayout.CENTER);
+        topPanel.add(buttonPanel, BorderLayout.SOUTH);
 
-        // Table
+        add(topPanel, BorderLayout.NORTH);
+
+        // ==== Table ====
         tableModel = new DefaultTableModel(new String[]{
                 "ID", "Customer", "Contact", "Vehicle", "Problem", "Cost", "Status"
         }, 0);
         orderTable = new JTable(tableModel);
-        add(new JScrollPane(orderTable), BorderLayout.CENTER);
+        orderTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        orderTable.getSelectionModel().addListSelectionListener(e -> loadSelectedOrder());
 
-        // Filter Panel
-        JPanel filterPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        JComboBox<String> filterBox = new JComboBox<>(new String[]{"All", "Pending", "In Progress", "Ready"});
-        filterBox.addActionListener(e -> filterOrders((String) filterBox.getSelectedItem()));
-        filterPanel.add(new JLabel("Filter by Status:"));
-        filterPanel.add(filterBox);
-        add(filterPanel, BorderLayout.SOUTH);
+        JScrollPane scrollPane = new JScrollPane(orderTable);
+        add(scrollPane, BorderLayout.CENTER);
 
-        // Table selection → fill form
-        orderTable.getSelectionModel().addListSelectionListener(e -> {
-            int row = orderTable.getSelectedRow();
-            if (row >= 0) {
-                nameField.setText((String) tableModel.getValueAt(row, 1));
-                contactField.setText((String) tableModel.getValueAt(row, 2));
-                modelField.setText((String) tableModel.getValueAt(row, 3));
-                problemField.setText((String) tableModel.getValueAt(row, 4));
-                costField.setText(String.valueOf(tableModel.getValueAt(row, 5)));
-                statusBox.setSelectedItem((String) tableModel.getValueAt(row, 6));
-            }
-        });
-
-        loadOrders();
+        loadOrders(); // initial load
     }
 
     private void addOrder(ActionEvent e) {
@@ -103,22 +104,21 @@ public class OrderForm extends JFrame {
             Order order = new Order(name, contact, vehicle, problem, cost, status);
 
             if (OrderController.addOrder(order)) {
-                JOptionPane.showMessageDialog(this, "✅ Order added successfully!");
+                JOptionPane.showMessageDialog(this, "✅ Order added!");
                 loadOrders();
                 clearForm();
             } else {
                 JOptionPane.showMessageDialog(this, "❌ Failed to add order.");
             }
-
         } catch (NumberFormatException ex) {
-            JOptionPane.showMessageDialog(this, "Cost must be a number.");
+            JOptionPane.showMessageDialog(this, "❌ Cost must be a valid number.");
         }
     }
 
     private void updateOrder(ActionEvent e) {
         int selectedRow = orderTable.getSelectedRow();
         if (selectedRow == -1) {
-            JOptionPane.showMessageDialog(this, "Select an order to update.");
+            JOptionPane.showMessageDialog(this, "Please select an order to update.");
             return;
         }
 
@@ -132,37 +132,48 @@ public class OrderForm extends JFrame {
             String status = (String) statusBox.getSelectedItem();
 
             Order order = new Order(id, name, contact, vehicle, problem, cost, status);
-
             if (OrderController.updateOrder(order)) {
-                JOptionPane.showMessageDialog(this, "✅ Order updated.");
+                JOptionPane.showMessageDialog(this, "✅ Order updated!");
                 loadOrders();
                 clearForm();
             } else {
-                JOptionPane.showMessageDialog(this, "❌ Update failed.");
+                JOptionPane.showMessageDialog(this, "❌ Failed to update order.");
             }
 
         } catch (Exception ex) {
-            JOptionPane.showMessageDialog(this, "Invalid input.");
+            JOptionPane.showMessageDialog(this, "❌ Invalid input.");
         }
     }
 
     private void deleteOrder(ActionEvent e) {
         int selectedRow = orderTable.getSelectedRow();
         if (selectedRow == -1) {
-            JOptionPane.showMessageDialog(this, "Select an order to delete.");
+            JOptionPane.showMessageDialog(this, "Please select an order to delete.");
             return;
         }
 
-        int confirm = JOptionPane.showConfirmDialog(this, "Are you sure?", "Confirm Delete", JOptionPane.YES_NO_OPTION);
-        if (confirm != JOptionPane.YES_OPTION) return;
+        int confirm = JOptionPane.showConfirmDialog(this, "Are you sure to delete this order?", "Confirm", JOptionPane.YES_NO_OPTION);
+        if (confirm == JOptionPane.YES_OPTION) {
+            int id = (int) tableModel.getValueAt(selectedRow, 0);
+            if (OrderController.deleteOrder(id)) {
+                JOptionPane.showMessageDialog(this, "🗑️ Order deleted.");
+                loadOrders();
+                clearForm();
+            } else {
+                JOptionPane.showMessageDialog(this, "❌ Failed to delete order.");
+            }
+        }
+    }
 
-        int id = (int) tableModel.getValueAt(selectedRow, 0);
-        if (OrderController.deleteOrder(id)) {
-            JOptionPane.showMessageDialog(this, "✅ Order deleted.");
-            loadOrders();
-            clearForm();
-        } else {
-            JOptionPane.showMessageDialog(this, "❌ Delete failed.");
+    private void loadSelectedOrder() {
+        int row = orderTable.getSelectedRow();
+        if (row != -1) {
+            nameField.setText((String) tableModel.getValueAt(row, 1));
+            contactField.setText((String) tableModel.getValueAt(row, 2));
+            modelField.setText((String) tableModel.getValueAt(row, 3));
+            problemField.setText((String) tableModel.getValueAt(row, 4));
+            costField.setText(String.valueOf(tableModel.getValueAt(row, 5)));
+            statusBox.setSelectedItem(tableModel.getValueAt(row, 6));
         }
     }
 
@@ -177,12 +188,13 @@ public class OrderForm extends JFrame {
         }
     }
 
-    private void filterOrders(String status) {
+    private void filterOrders() {
+        String selectedStatus = (String) filterBox.getSelectedItem();
         tableModel.setRowCount(0);
-        List<Order> orders = OrderController.getAllOrders();
 
+        List<Order> orders = OrderController.getAllOrders();
         for (Order o : orders) {
-            if (status.equals("All") || o.getStatus().equalsIgnoreCase(status)) {
+            if (selectedStatus.equals("All") || o.getStatus().equalsIgnoreCase(selectedStatus)) {
                 tableModel.addRow(new Object[]{
                         o.getId(), o.getCustomerName(), o.getContact(),
                         o.getVehicleModel(), o.getProblem(), o.getCost(), o.getStatus()
