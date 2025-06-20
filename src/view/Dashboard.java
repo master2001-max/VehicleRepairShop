@@ -22,7 +22,7 @@ public class Dashboard extends JFrame {
         JButton reportBtn = new JButton("📊 View Reports");
         JButton logoutBtn = new JButton("🚪 Logout");
 
-        // Add buttons to window
+        // Add buttons to layout
         add(orderBtn);
         add(empBtn);
         add(supplierBtn);
@@ -30,19 +30,16 @@ public class Dashboard extends JFrame {
         add(reportBtn);
         add(logoutBtn);
 
-        // Functional actions
+        // Action Listeners
         orderBtn.addActionListener(e -> new OrderForm().setVisible(true));
         empBtn.addActionListener(e -> new EmployeeForm().setVisible(true));
         supplierBtn.addActionListener(e -> new SupplierForm().setVisible(true));
+        inventoryBtn.addActionListener(e -> new InventoryForm().setVisible(true));
+        reportBtn.addActionListener(e -> new ReportForm().setVisible(true)); // ✅ Reports working
 
-        // Coming soon placeholders
-        inventoryBtn.addActionListener(e -> JOptionPane.showMessageDialog(this, "📦 Inventory module coming soon!"));
-        reportBtn.addActionListener(e -> JOptionPane.showMessageDialog(this, "📊 Report module coming soon!"));
-
-        // Logout
         logoutBtn.addActionListener(e -> {
-            dispose(); // close dashboard
-            new LoginForm().setVisible(true); // go back to login
+            dispose();
+            new LoginForm().setVisible(true);
         });
     }
 }
