@@ -38,7 +38,6 @@ Main.java             # Entry point
 | admin    | admin123  | Admin |
 | staff1   | staff123  | Staff |
 
-## 🗂️ Project Structure Screenshot
 
 ## 🗂️ Project Structure Screenshot
 
