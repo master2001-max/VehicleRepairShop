@@ -38,6 +38,40 @@ Main.java             # Entry point
 | admin    | admin123  | Admin |
 | staff1   | staff123  | Staff |
 
+## 🗂️ Project Structure Screenshot
+
+## 🗂️ Project Structure Screenshot
+
+### 🧪 Login View
+<img src="assets/login.png" alt="Login View" width="600" height="350"/>
+
+---
+
+### 🧪 Dashboard View
+<img src="assets/dashboard.png" alt="Dashboard View" width="600" height="350"/>
+
+---
+
+### 🧪 Employee Management
+<img src="assets/employee management.png" alt="Employee Management" width="600" height="350"/>
+
+---
+
+### 🧪 Inventory Management
+<img src="assets/inventoryManagement.png" alt="Inventory Management" width="600" height="350"/>
+
+---
+
+### 🧪 Customer Order Management
+<img src="assets/cOder.png" alt="Customer Order Management" width="600" height="350"/>
+
+---
+
+### 🧪 Reports
+<img src="assets/report.png" alt="Reports" width="600" height="350"/>
+
+
+
 ## 🧰 Setup Instructions
 
 ### 1. Import SQL Database
